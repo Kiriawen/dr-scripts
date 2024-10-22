@@ -10,6 +10,7 @@ charge_messages:
 - You fail to channel
 - you find it too clumsy to charge
 - How much do you want to charge
+- Something in the area is interfering with your magical senses.
 
 invoke_messages:
 - Images of streaking stars falling from the heavens flash
@@ -31,6 +32,7 @@ invoke_messages:
 - you find it too clumsy to invoke
 - You raise the (\w+) up, and a (\w+) glow surrounds it
 - You prick your finger with the tip of your athame
+- Something in the area is interfering with the magical device.
 
 prep_messages:
 - With rigid movements you prepare your body for the Embed the Cycle spell
@@ -141,6 +143,12 @@ prep_messages:
 - Focusing intently, you trace a
 - Please don't do that here
 - You cannot use the tattoo while maintaining the effort to stay hidden
+- As you attempt to prepare the spell, a sense of overwhelming peace washes over you
+# Tattoo failed to invoke due to anti-magic room
+- Something in the area is interfering with the magical device.
+# You tried to target a spell but there is nothing left to face
+- There is nothing else to face
+- With a chirurgeon's care, you press your fingertips against the side of your neck
 
 cast_messages:
 - Converging in midair, angular ripples assemble a slender hexagonal rod whorled with faintly shifting fractals
@@ -149,6 +157,7 @@ cast_messages:
 - ^Your spell .*backfires
 - You strain, but are too mentally fatigued
 - ^You gesture
+- As you bow your head and chant
 - A soft silver glow envelops
 - You blend smoothly into your surroundings
 - You listen intently to the air
@@ -196,6 +205,7 @@ cast_messages:
 - Using your (left|right) hand, you channel the spell's energies and gesture
 - You steeple your fingers together
 - You successfully weave the .* spell into the receptive aura of the orb
+- As you gesture .* vela'tohr .* forms and grows before you
 - The energy contained in your ritual flutters away impotently as it seeks the open skies
 - At the ritual's peak, your prophetic connection blooms a thousand-fold
 - Traces of your prior ritual still linger about you
@@ -252,6 +262,9 @@ cast_messages:
 - Pebbles all around your feet jump quickly into the air and hover a moment, before falling back down.
 - A thin layer of frost quickly forms on your .* before just as quickly evaporating.
 - A quick gust of wind picks up from out of nowhere and quickly swirls about you.
+- Sutures of reddish-black energy delve deep
+- Tears of hot regret flow down your eyes
+- Your eyes flare with a whorl
 
 khri_preps:
 - Releasing a deep breath, you focus on your ability to survive the
@@ -294,6 +307,7 @@ khri_preps:
 - Deep within yourself you call forth
 - You begin to draw your focus
 - Reaching within, you prepare
+- You focus inward, attempting to increase your stamina and slow your heartbeat
 
 barb_abilities:
   Python:
@@ -421,6 +435,16 @@ barb_abilities:
     start_command: berserk cyclone
     activated_message: ^Fury storming forth
     expired_message: cyclone of fury drifts away
+  Blizzard:
+    type: berserk
+    start_command: berserk blizzard
+    activated_message: ^Unleashing a blizzard of hate
+    expired_message: ^Your blizzard of hate melts away, leaving you deflated
+  Hurricane:
+    type: berserk
+    start_command: berserk hurricane
+    activated_message: ^Fury wells up from within and swirls into a raging hurricane
+    expired_message: ^Your rage dissipates, pulling you away from your focused center of fury
   Contemplation:
     type: meditation
     start_command: meditate contemplation
@@ -610,10 +634,8 @@ spell_data:
     harmless: true
     abbrev: AEWO
     prep: prepare
-    cyclic: true
     mana: 2
     mana_type: elemental
-    recast: -1
     guild: Bard
   Albreda's Balm:
     skill: Debilitation
@@ -639,6 +661,7 @@ spell_data:
     mana: 30
     abbrev: BTN
     prep: prepare
+    expire: You think it is safe enough to summon another lesser naga
     mana_type: elemental
     guild: Bard
   Blessing of the Fae:
@@ -660,11 +683,10 @@ spell_data:
   Caress of the Sun:
     skill: Utility
     abbrev: CARE
-    cyclic: true
-    mana: 2
+    mana: 1
     mana_type: elemental
     prep: prepare
-    recast: -1
+    recast: 1
     guild: Bard
   Damaris' Lullaby:
     skill: Debilitation
@@ -1345,6 +1367,16 @@ spell_data:
     prep: prepare
     recast: 1
     guild: Empath
+  Embrace of the Vela'Tohr:
+    skill: Utility
+    harmless: true
+    abbrev: EV
+    prep: prepare
+    mana: 300
+    ritual: true
+    recast: 5
+    mana_type: life
+    guild: Empath
   Flush Poisons:
     skill: Utility
     abbrev: FP
@@ -1670,21 +1702,22 @@ spell_data:
     ritual: true
     recast: 0 # Don't recast while it's up to prevent incineration
     stats:
-    - Discipline
-    - Agility
-    - Wisdom
+      - Discipline
+      - Agility
+      - Wisdom
     # Release before casting to prevent incineration
     before:
       - message: release iots
         matches:
-        - Release what
-        - You feel the energy
+          - Release what
+          - You feel the energy
     after:
       - message: invoke circle
         matches:
-        - You step inside
-        - You draw your hand
-        - Invoke what
+          - You step inside
+          - You draw your hand
+          - Invoke what
+      - message: perc self
     mana_type: lunar
     prep: prepare
     guild: Moon Mage
@@ -1817,7 +1850,7 @@ spell_data:
     abbrev: SCO
     mana: 30
     recast: 1
-    mana_type: arcane
+    mana_type: lunar
     prep: prepare
     guild: Moon Mage
   Seer's Sense:
@@ -1858,17 +1891,18 @@ spell_data:
     mana: 15
     recast: 1
     before:
-    - message: release shadowling
-      matches:
-      - You gesture
-      - A faint growl
-      - That would be a neat trick
+      - message: release shadowling
+        matches:
+          - You gesture
+          - A faint growl
+          - That would be a neat trick
     after:
-    - message: invoke shadowling
-      matches:
-      - Invoke what
-      - You gesture, adjusting the pattern that binds the shadowling to this plane
-      - You're not sure what would happen
+      - message: invoke shadowling
+        matches:
+          - Invoke what
+          - You gesture, adjusting the pattern that binds the shadowling to this plane
+          - You're not sure what would happen
+      - message: perc self
     mana_type: lunar
     prep: prepare
     guild: Moon Mage
@@ -2048,6 +2082,22 @@ spell_data:
     mana_type: arcane
     prep: target
     guild: Necromancer
+  Book Burning:
+    skill: Utility #Also Targeted Magic
+    abbrev: BB
+    mana: 300
+    recast: 0
+    # Wear after casting to free up hand
+    after:
+      - message: wear my spectral torch
+        matches:
+          - You toss your spectral torch aside
+          - You are already wearing that
+          - Wear what
+    mana_type: arcane
+    prep: prepare
+    ritual: true
+    guild: Necromancer
   Butcher's Eye:
     skill: Augmentation
     abbrev: BUE
@@ -2071,6 +2121,15 @@ spell_data:
     recast: 1
     mana_type: arcane
     prep: prepare
+    guild: Necromancer
+  Call from Within:
+    skill: Utility #Also Targeted Magic
+    abbrev: CFW
+    mana: 5
+    recast: -1
+    mana_type: arcane
+    prep: prepare
+    cyclic: true
     guild: Necromancer
   Chirurgia:
     abbrev: CHIR
@@ -2119,7 +2178,9 @@ spell_data:
     guild: Necromancer
   Ghoulflesh:
     skill: Warding
+    abbrev: ghoulflesh
     mana: 15
+    recast: 1
     mana_type: arcane
     prep: prepare
     guild: Necromancer
@@ -2153,6 +2214,12 @@ spell_data:
     skill: Utility
     abbrev: NR
     mana: 15
+    before:
+    - message: perform cut
+      matches:
+      - You draw a slight cut across your palm in ritualized fashion, drawing forth a small but useful amount of blood without any real injury
+      - You draw a slight cut across your palm, repeating the ritual to ensure a supply of useful blood
+      - Lacking your knife, you cannot perform any rituals
     recast: 1
     mana_type: arcane
     prep: prepare
@@ -2475,6 +2542,9 @@ spell_data:
     mana_type: holy
     prep: prepare
     guild: Paladin
+  Sidasas Sedra:
+    guild: Paladin
+    metamagic: true
   Smite Horde:
     skill: Targeted Magic
     abbrev: SMH
